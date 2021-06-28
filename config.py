@@ -25,3 +25,11 @@ class Config:
     drop_out = 0
     depth = 3
     
+    
+    train_batch_size = 32
+    train_num_workers = 8
+    valid_batch_size = 8
+    valid_num_workers = 2
+    
+
+    

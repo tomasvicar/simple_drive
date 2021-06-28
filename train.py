@@ -22,7 +22,28 @@ def train(config):
     gpuLogger = GpuLogger()
     device = torch.device(config.device)
     
+    
+    
+    train_generator = Dataset(augment=True,config=config,data_type='train')
+    train_generator = data.DataLoader(train_generator,batch_size=config.train_batch_size,num_workers= config.train_num_workers, shuffle=True,drop_last=True)
+
+    valid_generator = Dataset(augment=False,config=config,data_type='valid')
+    valid_generator = data.DataLoader(valid_generator,batch_size=config.valid_batch_size, num_workers=config.valid_num_workers, shuffle=True,drop_last=False)
+    
+    
+    
+    
     model = Unet(filters=config.filters,in_size=config.in_channels,out_size=1,do=config.drop_out,depth=config.depth)
+    model.config = config
+    model = model.to(device)
+    
+    model.log = Log(names=['loss','dice'])
+    
+    
+    
+    
+    
+    
     
     
     
