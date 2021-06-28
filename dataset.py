@@ -2,7 +2,8 @@ from torch.utils import data
 import numpy as np
 import torch 
 import h5py
-import atexit
+import matplotlib.pyplot as plt
+import cv2
 
 
 class Dataset(data.Dataset):
@@ -13,6 +14,7 @@ class Dataset(data.Dataset):
         self.augment = augment
         self.config = config
         self.data_type = data_type
+        self.h5data = None
         
         if data_type == 'train': 
             self.h5data_file = config.data_train
@@ -25,36 +27,50 @@ class Dataset(data.Dataset):
         
         
     def __len__(self):
-        
-            return 150 # self.h5dat["imgs"].shape[2]
+        with h5py.File(self.h5data_file,"r") as h5dat_tmp:
+            return h5dat_tmp["imgs"].shape[2]
 
 
 
     def __getitem__(self, index):
         
+        if  self.h5data is None:
+            self.h5data = h5py.File(self.h5data_file, 'r')
+            
+        img = self.h5data["imgs"][:,:,index]
+        mask = self.h5data["masks"][:,:,index]
         
-        img = self.h5data[:,:,index]
         
-        img = img.astype(np.float64)/255
+        clahe = cv2.createCLAHE(clipLimit=self.config.clahe_clip,tileGridSize=(self.config.clahe_grid,self.config.clahe_grid))
+        img = clahe.apply(img)
+        
+        
+        r=[torch.randint(2,(1,1)).view(-1).numpy(),torch.randint(2,(1,1)).view(-1).numpy(),torch.randint(4,(1,1)).view(-1).numpy()]
+        if r[0]:
+            img=np.fliplr(img)
+            mask=np.fliplr(mask)
+        if r[1]:
+            img=np.flipud(img)
+            mask=np.flipud(mask) 
+        img=np.rot90(img,k=r[2]) 
+        mask=np.rot90(mask,k=r[2])   
+            
+            
+        img = img.astype(np.float64)/255 - 0.5
+        img =  np.expand_dims(img,2)
+        
+
+        mask =  np.expand_dims(mask,2)
+        mask=torch.from_numpy(np.transpose(mask,(2,0,1)).astype(np.float32))
         
         img=torch.from_numpy(np.transpose(img,(2,0,1)).astype(np.float32))
         
-        
-        return img
 
         
-    def h5py_worker_init(self):
-        self.h5data = h5py.File(self.h5data_file, "r", libver="latest", swmr=True)
-        atexit.register(self.cleanup)
+        return img,mask
 
-    def cleanup(self):
-        self.h5data.close()
-
-    @staticmethod
-    def worker_init_fn(worker_id):
-        worker_info = torch.utils.data.get_worker_info()
-        dataset = worker_info.dataset
-        dataset.h5py_worker_init()
+        
+  
 
 if __name__ == "__main__":
     
@@ -62,14 +78,22 @@ if __name__ == "__main__":
     
     config = Config()
     
-    config.train_num_workers = 0
+    config.train_num_workers = 3
     
     train_generator = Dataset(augment=True,config=config,data_type='train')
-    train_generator = data.DataLoader(train_generator,batch_size=config.train_batch_size,num_workers=config.train_num_workers, shuffle=True,drop_last=True,worker_init_fn=Dataset.worker_init_fn)
+    train_generator = data.DataLoader(train_generator,batch_size=config.train_batch_size,num_workers=config.train_num_workers, shuffle=True,drop_last=True)
     
     
-    for img in train_generator:
+    for img,mask in train_generator:
         
-        print(img)
+        plt.imshow(np.transpose(img[0,:,:,:].numpy(),(1,2,0))+0.5,vmin=0,vmax=1)
+        plt.show()
+        plt.imshow(np.transpose(mask[0,:,:,:].numpy(),(1,2,0))+0.5,vmin=0,vmax=1)
+        plt.show()
+        
+        break
+        
+        
+        
     
     
