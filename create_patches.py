@@ -8,7 +8,7 @@ from skimage.io import imread
 
 data_path = '../DRIVE'
 save_path = '../patches'
-N = 1000
+N = 10000
 size = 48
 seed = 42
 split_ratio_train_valid=[6.5,1.5]

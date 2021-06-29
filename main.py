@@ -1,9 +1,9 @@
 from train import train
-# from test_ import test_
+from test_ import test_
 import os
 from config import Config
-
-
+import numpy as np
+import json
 
 if __name__ == "__main__":
     
@@ -23,10 +23,32 @@ if __name__ == "__main__":
     
     
     model_name = train(config)
+    # model_name = '../best_models/simple_drive_6_0.00100_gpu_0.00000_train_0.10285_valid_0.09200.pt'
     
-    # auc,acc = test_(model_name)
+    accs,aucs,dices,tps,fps,fns,tns = test_(model_name,test_path=config.test_path)
 
+    print(np.mean(accs))
+    print(np.mean(aucs))
+    
+    results = {}
+    
+    results['mean ACC'] = np.mean(accs)
+    results['mean AUC'] = np.mean(accs)
+    results['ACC'] = accs
+    results['AUC'] = aucs
+    results['DICE'] = dices
+    results['TP'] = tps
+    results['FP'] = fps
+    results['FN'] = fns
+    results['TN'] = tns
+    
+    
 
+    
+    
+
+    with open('../result.json', 'w') as outfile:
+        json.dump(results, outfile)    
 
 
 

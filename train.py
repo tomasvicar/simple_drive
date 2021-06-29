@@ -4,7 +4,6 @@ import torch
 from torch.utils import data
 import matplotlib.pyplot as plt
 from shutil import copyfile
-import segmentation_models_pytorch as smp
 from shutil import rmtree
 
 from dataset import Dataset

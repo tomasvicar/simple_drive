@@ -10,6 +10,8 @@ class Config:
     
     best_models_dir='../best_models'
     
+    test_path = '../DRIVE/test'
+    
     results_folder = '../results'
     
     device ='cuda:0'
