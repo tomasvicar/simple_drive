@@ -4,7 +4,7 @@ import torch
 import h5py
 import matplotlib.pyplot as plt
 import cv2
-
+import time
 
 class Dataset(data.Dataset):
 
@@ -77,21 +77,27 @@ if __name__ == "__main__":
     from config import Config    
     
     config = Config()
-    
-    config.train_num_workers = 3
+    config.train_num_workers = 0
     
     train_generator = Dataset(augment=True,config=config,data_type='train')
     train_generator = data.DataLoader(train_generator,batch_size=config.train_batch_size,num_workers=config.train_num_workers, shuffle=True,drop_last=True)
     
     
-    for img,mask in train_generator:
+    start = time.time()
+    for it,(img,mask) in enumerate(train_generator):
         
-        plt.imshow(np.transpose(img[0,:,:,:].numpy(),(1,2,0))+0.5,vmin=0,vmax=1)
-        plt.show()
-        plt.imshow(np.transpose(mask[0,:,:,:].numpy(),(1,2,0))+0.5,vmin=0,vmax=1)
-        plt.show()
+        # plt.imshow(np.transpose(img[0,:,:,:].numpy(),(1,2,0))+0.5,vmin=0,vmax=1)
+        # plt.show()
+        # plt.imshow(np.transpose(mask[0,:,:,:].numpy(),(1,2,0))+0.5,vmin=0,vmax=1)
+        # plt.show()
         
-        break
+        if it==50:
+            break
+        
+    end = time.time()
+    print(end - start)
+        
+        
         
         
         

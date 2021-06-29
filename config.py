@@ -33,7 +33,7 @@ class Config:
     depth = 3
     
     
-    train_batch_size = 16
+    train_batch_size = 32
     train_num_workers = 8
     valid_batch_size = 4
     valid_num_workers = 2
