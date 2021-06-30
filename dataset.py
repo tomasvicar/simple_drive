@@ -78,6 +78,7 @@ if __name__ == "__main__":
     
     config = Config()
     config.train_num_workers = 4
+
     
     train_generator = Dataset(augment=True,config=config,data_type='train')
     train_generator = data.DataLoader(train_generator,batch_size=config.train_batch_size,num_workers=config.train_num_workers, shuffle=True,drop_last=True)
@@ -90,14 +91,14 @@ if __name__ == "__main__":
         # plt.show()
         # plt.imshow(np.transpose(mask[0,:,:,:].numpy(),(1,2,0))+0.5,vmin=0,vmax=1)
         # plt.show()
-        
+
         if it%10 == 0:
             end = time.time()
             print(end - start)
             start = time.time()
         
     
-        
+
         
         
         
