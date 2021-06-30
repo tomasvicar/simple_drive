@@ -51,8 +51,8 @@ for data_type in ['train','valid']:
     
     with h5py.File(outfile,"w") as f:
         
-        dset_img = f.create_dataset('imgs', (size,size,N*len(names_img)), dtype='u1')
-        dset_mask = f.create_dataset('masks', (size,size,N*len(names_img)), dtype='?')
+        dset_img = f.create_dataset('imgs', (size,size,N*len(names_img)), dtype='u1',chunks=(size,size,1))###optimalna chunk tak jak to budu cist; uint8
+        dset_mask = f.create_dataset('masks', (size,size,N*len(names_img)), dtype='?',chunks=(size,size,1))##bool
         
         slice_ = -1
     

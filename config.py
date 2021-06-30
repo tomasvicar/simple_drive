@@ -28,13 +28,13 @@ class Config:
     patch_size  = 48
     
     
-    filters = 32
+    filters = 16
     drop_out = 0
     depth = 3
     
     
-    train_batch_size = 16
-    train_num_workers = 8
+    train_batch_size = 32
+    train_num_workers = 4
     valid_batch_size = 4
     valid_num_workers = 2
     

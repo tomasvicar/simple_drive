@@ -5,6 +5,7 @@ from torch.utils import data
 import matplotlib.pyplot as plt
 from shutil import copyfile
 from shutil import rmtree
+import time
 
 from dataset import Dataset
 from utils.log import Log
@@ -43,9 +44,16 @@ def train(config):
     scheduler = torch.optim.lr_scheduler.MultiStepLR(optimizer, config.lr_changes_list, gamma=config.gamma, last_epoch=-1)
 
     for epoch in range(config.max_epochs):
-        
         model.train()
-        for img,mask in train_generator:
+        start = time.time()
+        N = len(train_generator)
+        for train_it,(img,mask) in enumerate(train_generator):
+            if (train_it%500) == 0:
+                print(str(train_it) + ' / ' + str(N))
+                end = time.time()
+                print(end - start)
+                start = time.time()
+        
             
             img = img.to(torch.device(config.device))
              
@@ -69,7 +77,10 @@ def train(config):
             
         model.eval()
         with torch.no_grad():
-            for img,mask in valid_generator:
+            N = len(valid_generator)
+            for valid_it,(img,mask) in enumerate(valid_generator):
+                if (valid_it%500) == 0:
+                    print(str(valid_it) + ' / ' + str(N))
                 
                 img = img.to(torch.device(config.device))
                 

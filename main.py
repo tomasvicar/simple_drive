@@ -22,8 +22,8 @@ if __name__ == "__main__":
     
     
     
-    model_name = train(config)
-    # model_name = '../best_models/simple_drive_6_0.00100_gpu_0.00000_train_0.10285_valid_0.09200.pt'
+    # model_name = train(config)
+    model_name = 'simple_drive_25_0.00100_gpu_1.36633_train_0.08977_valid_0.08799.pt'
     
     accs,aucs,dices,tps,fps,fns,tns = test_(model_name,test_path=config.test_path)
 
